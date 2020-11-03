@@ -20,12 +20,14 @@ if SERVER then
 				end
 			end
 		elseif hitgroup == HITGROUP_LEFTLEG or hitgroup == HITGROUP_RIGHTLEG then
-            char:AddBoost("legShoot","stm",-100)   
+			char:AddBoost("legShoot","stm",-100)   
             char:AddBoost("legShoot","stamina",-120)
 
 			timer.Simple(60, function()
-				char:RemoveBoost("legShoot", "stm")
-				char:RemoveBoost("legShoot", "stamina")
+				if IsValid(char) then
+					char:RemoveBoost("legShoot", "stm")
+					char:RemoveBoost("legShoot", "stamina")
+				end
 			end)
 		elseif hitgroup == HITGROUP_HEAD or headhit then
 			if math.random(0,100) > 50 then
