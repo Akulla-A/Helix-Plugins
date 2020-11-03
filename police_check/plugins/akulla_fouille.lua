@@ -6,7 +6,11 @@ PLUGIN.description = "Fouiller un joueur"
 if SERVER then
 	local COMMAND = {
 		OnRun = function(self, client)
-			if not client:IsPolice() then ix.util.Notify("Vous devez être policier pour cela", client) return end
+			if not client:IsPolice() then 
+				ix.util.Notify("Vous devez être policier pour cela", client) 
+				return 
+			end
+			
 			local tr = client:GetEyeTrace()
 			local ent = tr.Entity
 

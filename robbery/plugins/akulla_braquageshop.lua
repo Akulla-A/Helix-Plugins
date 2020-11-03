@@ -38,6 +38,7 @@ if SERVER then
                         else
                             ply:Notify("Vous devez d'abord braquer le vendeur")
                         end
+                        break
                     end
                 end
             else

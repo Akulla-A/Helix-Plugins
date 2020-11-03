@@ -4,6 +4,7 @@ include("shared.lua")
 
 function ENT:Think()
 	if not self.FearChar then
+		-- May be better to put a think on player rather than npc, depend on player/npc number
 		for k,v in pairs(ents.FindInSphere(self:GetPos(), 500)) do
 			if v:IsPlayer() and team.GetName(v:Team()) ~= "Police" and v:GetActiveWeapon().CW20Weapon then
 				if v:GetEyeTrace().Entity == self then
@@ -29,7 +30,7 @@ end
 
 function ENT:Use(ply)
 	if team.GetName(ply:Team()) == "Police" then
-		if IsValid(self.FearChar) then
+		if IsValid(self.FearChar) and IsValid(self.FearChar:GetCharacter()) then
 			ply:ChatNotify("Description du braqueur : "..self.FearChar:GetCharacter():GetDescription())
 		else
 			ply:ChatNotify("Le braqueur à quitté la ville")

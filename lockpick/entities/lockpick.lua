@@ -49,11 +49,31 @@ if SERVER then
 	function SWEP:ValidCheck() -- check if every condition are good
 		local owner = self:GetOwner()
 		local ent = owner:GetEyeTrace().Entity
-		return (owner and owner:IsValid() and ent:IsValid() and owner:GetActiveWeapon():GetClass() == "lockpick" and ent:IsDoor())
+		local wep = owner:GetActiveWeapon()
+		return (owner and owner:IsValid() and ent:IsValid() and IsValid(wep) and wep:GetClass() == "lockpick" and ent:IsDoor())
 	end
 
 	function SWEP:Holster()
 		self:GetOwner():SetAction(nil)
+	end
+
+	function SWEP:GoodUse(owner, ent)
+		if self:ValidCheck() and self.Lockpicking then
+			local ent = self:GetOwner():GetEyeTrace().Entity
+			ent:Fire("Unlock")
+			ent:Fire("Open")
+			ix.util.Notify("Vous avez réussi votre crochetage", self:GetOwner())
+		else
+			ix.util.Notify("Vous avez raté votre crochetage", self:GetOwner())
+		end
+		self:GetOwner():SetAction(nil)
+		self:Deploy()
+	end
+	
+	function SWEP:BadUse(owner)
+		self:Deploy()
+		owner:SetAction(nil)
+		ix.util.Notify("Vous avez échoué votre crochetage", owner)
 	end
 
 	function SWEP:StartLockpick()
@@ -65,25 +85,7 @@ if SERVER then
 			self.Lockpicking = true
 
 			owner:SetAction("Ouverture...", self.Lockpicktiming)
-			owner:DoStaredAction(ent, 
-			function()
-				if self:ValidCheck() and self.Lockpicking then
-					local ent = self:GetOwner():GetEyeTrace().Entity
-					ent:Fire("Unlock")
-					ent:Fire("Open")
-					ix.util.Notify("Vous avez réussi votre crochetage", self:GetOwner())
-				else
-					ix.util.Notify("Vous avez raté votre crochetage", self:GetOwner())
-				end
-				self:GetOwner():SetAction(nil)
-				self:Deploy()
-			end, 
-			self.Lockpicktiming, 
-			function()
-				self:Deploy()
-				self:GetOwner():SetAction(nil)
-				ix.util.Notify("Vous avez échoué votre crochetage", self:GetOwner())
-			end, 200)
+			owner:DoStaredAction(ent, self:GoodUse(owner, ent), self.Lockpicktiming, self:BadUse(owner))
 		end
 	end
 
